@@ -6,7 +6,8 @@ import maths.writter.Manager;
 import maths.writter.controller.FrameListener;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public abstract class Node implements FrameListener {
@@ -16,6 +17,7 @@ public abstract class Node implements FrameListener {
     protected final ArrayList<Node> nodes = new ArrayList<>();
     protected final ArrayList<Node> nodes_selected = new ArrayList<>();
 
+    protected boolean movable;
 
     protected final Location location;
     protected final Size size;
@@ -27,6 +29,11 @@ public abstract class Node implements FrameListener {
     protected boolean over = false;
 
     public Node(final Location location, final Size size) {
+        this(location, size, false);
+    }
+
+    public Node(final Location location, final Size size, boolean movable) {
+        this.movable = false;
         this.location = location;
         this.size = new Size(0, 0);
         this.setSize(size);
@@ -221,8 +228,17 @@ public abstract class Node implements FrameListener {
                             e.getClickCount(), e.isPopupTrigger(), e.getButton()));
     }
 
+    protected boolean moveInAction;
+    protected Location locationInAction;
+
     @Override
     public void mousePressed(MouseEvent e) {
+        if (this.nodes_selected.size() == 0 && this.movable)
+            if (e.getX() < 5 || e.getY() < 5 || this.size.getWidth() - 5 < e.getX() || this.getSize().getHeight() - 5 < e.getY()) {
+                this.moveInAction = true;
+                this.locationInAction = new Location(e.getX(), e.getY());
+                return;
+            }
         Node node = this.getCollisionWithSelectedNodes(new Location(e.getX(), e.getY()));
         if (node != null) {
             node.mousePressed(
@@ -237,6 +253,13 @@ public abstract class Node implements FrameListener {
             if (!multiple_select)
                 this.clearSelected();
             this.addNodeSelected(node);
+            node.mousePressed(
+                    new MouseEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
+                            e.getX() - node.location.getX(), e.getY() - node.location.getY(),
+                            e.getClickCount(), e.isPopupTrigger(), e.getButton()));
+            node.mouseMoved(new MouseEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
+                    e.getX() - node.location.getX(), e.getY() - node.location.getY(),
+                    e.getClickCount(), e.isPopupTrigger(), e.getButton()));
             this.mouseMoved(new MouseEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
                     e.getX() - node.location.getX(), e.getY() - node.location.getY(),
                     e.getClickCount(), e.isPopupTrigger(), e.getButton()));
@@ -246,6 +269,8 @@ public abstract class Node implements FrameListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        if (this.moveInAction)
+            this.moveInAction = false;
         Node node = this.getCollisionWithSelectedNodes(new Location(e.getX(), e.getY()));
         if (node != null)
             node.mouseReleased(
@@ -261,21 +286,31 @@ public abstract class Node implements FrameListener {
 
     @Override
     public void mouseExited(MouseEvent e) {
-
+        Manager.manager_last_Manager.setCursor(Cursor.getDefaultCursor());
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        Node node = this.getCollisionWithSelectedNodes(new Location(e.getX(), e.getY()));
-        if (node != null)
-            node.mouseDragged(
-                    new MouseEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
-                            e.getX() - node.location.getX(), e.getY() - node.location.getY(),
-                            e.getClickCount(), e.isPopupTrigger(), e.getButton()));
+        if (this.moveInAction) {
+            this.location.setLocation(this.location.getX() - (this.locationInAction.getX() - e.getX()), this.location.getY() - (this.locationInAction.getY() - e.getY()));
+        } else {
+            Node node = this.getCollisionWithSelectedNodes(new Location(e.getX(), e.getY()));
+            if (node != null)
+                node.mouseDragged(
+                        new MouseEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
+                                e.getX() - node.location.getX(), e.getY() - node.location.getY(),
+                                e.getClickCount(), e.isPopupTrigger(), e.getButton()));
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        if (this.nodes_selected.size() == 0 && this.movable)
+            if (e.getX() < 5 || e.getY() < 5 || this.size.getWidth() - 5 < e.getX() || this.getSize().getHeight() - 5 < e.getY())
+                Manager.manager_last_Manager.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            else
+                Manager.manager_last_Manager.setCursor(Cursor.getDefaultCursor());
+
         Node node = this.getCollisionWithSelectedNodes(new Location(e.getX(), e.getY()));
         if (node != null) {
             if (!node.isOver()) {
@@ -343,4 +378,11 @@ public abstract class Node implements FrameListener {
 
     }
 
+    public void setMovable(boolean movable) {
+        this.movable = movable;
+    }
+
+    public boolean isMovable() {
+        return movable;
+    }
 }

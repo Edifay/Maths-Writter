@@ -52,7 +52,6 @@ public class TextAreaModified extends Node {
             if (parent.getSize().getHeight() > preferredSize.getHeight() || parent.getSize().getHeight() != this.size.getHeight())
                 parent.update();
 
-
         g.setFont(font);
         this.text_manager.forEachLine((text, line_number) -> g.drawString(text, 0, this.caret_height * (line_number + 1)));
         if (selected) {
@@ -283,6 +282,9 @@ public class TextAreaModified extends Node {
                         Clipboard system_x = Toolkit.getDefaultToolkit().getSystemClipboard();
                         String at_add = (String) system_x.getData(DataFlavor.stringFlavor);
                         this.text_manager.insertLineAtCharacter(at_add);
+                        if (this.text_manager.isSelect())
+                            this.text_manager.deleteSelect();
+                        this.text_manager.setCaret_location(new Location(this.text_manager.getCaretLocation().getX() + at_add.length(), this.text_manager.getCaretLocation().getY()));
                     } catch (UnsupportedFlavorException | IOException ex) {
                         ex.printStackTrace();
                     }

@@ -19,7 +19,12 @@ public class FractionNode extends Node {
 
     @Override
     public void draw(Graphics2D g, Node parent) {
-        g.fillRoundRect(20, this.size.getHeight() / 2 - 1, this.getSize().getWidth() - 40, 2, 8, 8);
+        int biggest_width = 0;
+        for (Node node : this.nodes)
+            if (node.getSize().getWidth() > biggest_width)
+                biggest_width = node.getSize().getWidth();
+
+        g.fillRoundRect(this.size.getWidth() / 2 - biggest_width / 2, this.size.getHeight() / 2 - 1, biggest_width, 2, 8, 8);
         super.draw(g, parent);
     }
 
@@ -49,10 +54,22 @@ public class FractionNode extends Node {
     }
 
     @Override
+    public Size getPreferredSize() {
+        Size biggest = new Size(10, 10);
+        for (Node node : nodes) {
+            Size preferred_size = node.getPreferredSize();
+            if (preferred_size.getWidth() > biggest.getWidth())
+                biggest.setWidth(preferred_size.getWidth());
+            if (preferred_size.getHeight() > biggest.getHeight())
+                biggest.setHeight(preferred_size.getHeight() + 30);
+        }
+        return biggest;
+    }
+
+    @Override
     public void update() {
         super.update();
     }
-
 
     @Override
     protected void resizeChild() {

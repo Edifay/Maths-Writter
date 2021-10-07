@@ -57,6 +57,7 @@ public class NewNodeListener implements FrameListener {
         synchronized (key) {
             default_location = new Location(e.getX(), e.getY());
             actual = new FractionNode(default_location.clone(), new Size(100, 100));
+            actual.setMovable(true);
             this.manager.getContener().addNode(actual);
             this.manager.getContener().addNodeSelected(actual);
         }

@@ -1,11 +1,12 @@
 package maths.writter.controller.frame_controllers;
 
 import dependences.Location;
+import dependences.RectangleArea;
 import dependences.Size;
 import maths.writter.Manager;
 import maths.writter.controller.FrameListener;
+import maths.writter.element.FractionNode;
 import maths.writter.element.Node;
-import maths.writter.element.TextNode;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -13,9 +14,8 @@ import java.awt.event.MouseEvent;
 
 public class NewNodeListener implements FrameListener {
 
-    protected Manager manager;
-
     protected final Object key = new Object();
+    protected Manager manager;
     protected Node actual = null;
     protected Size size;
 
@@ -56,7 +56,7 @@ public class NewNodeListener implements FrameListener {
     public void mousePressed(MouseEvent e) {
         synchronized (key) {
             default_location = new Location(e.getX(), e.getY());
-            actual = new TextNode(default_location.clone(), new Size(100, 100));
+            actual = new FractionNode(default_location.clone(), new Size(100, 100));
             this.manager.getContener().addNode(actual);
             this.manager.getContener().addNodeSelected(actual);
         }
@@ -65,9 +65,12 @@ public class NewNodeListener implements FrameListener {
     @Override
     public void mouseReleased(MouseEvent e) {
         synchronized (key) {
-            if (actual != null)
-                actual.setSize(new Size(e.getX() - actual.getLocation().getX(), e.getY() - actual.getLocation().getY()));
-            actual = null;
+            if (actual != null) {
+                RectangleArea rectangleArea = getWidth(new Location(e.getX(), e.getY()));
+                actual.setLocation(rectangleArea.getLocation());
+                actual.setSize(rectangleArea.getSize());
+                actual = null;
+            }
             this.manager.changeListener(new DefaultListener(this.manager));
         }
     }
@@ -91,12 +94,9 @@ public class NewNodeListener implements FrameListener {
     public void mouseDragged(MouseEvent e) {
         synchronized (key) {
             if (actual != null) {
-                Size size = new Size(e.getX() - actual.getLocation().getX(), e.getY() - actual.getLocation().getY());
-                if (size.getWidth() < 0) {
-                    actual.setLocation(default_location);
-                } else {
-                }
-                actual.setSize(new Size(1500, 050));
+                RectangleArea rectangleArea = getWidth(new Location(e.getX(), e.getY()));
+                actual.setLocation(rectangleArea.getLocation());
+                actual.setSize(rectangleArea.getSize());
             }
         }
     }
@@ -104,5 +104,25 @@ public class NewNodeListener implements FrameListener {
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    private RectangleArea getWidth(Location location) {
+        RectangleArea rectangleArea = new RectangleArea();
+        if (location.getX() > this.default_location.getX()) {
+            rectangleArea.getLocation().setX(this.default_location.getX());
+            rectangleArea.getSize().setWidth(location.getX() - this.default_location.getX());
+        } else {
+            rectangleArea.getLocation().setX(location.getX());
+            rectangleArea.getSize().setWidth(this.default_location.getX() - location.getX());
+        }
+
+        if (location.getY() > this.default_location.getY()) {
+            rectangleArea.getLocation().setY(this.default_location.getY());
+            rectangleArea.getSize().setHeight(location.getY() - this.default_location.getY());
+        } else {
+            rectangleArea.getLocation().setY(location.getY());
+            rectangleArea.getSize().setHeight(this.default_location.getY() - location.getY());
+        }
+        return rectangleArea;
     }
 }

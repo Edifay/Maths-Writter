@@ -4,19 +4,21 @@ import dependences.Location;
 import dependences.Size;
 import maths.writter.element.special.TextAreaModified;
 
+import java.awt.event.KeyEvent;
+
 
 public class TextNode extends Node {
 
     protected TextAreaModified textArea;
 
-    public TextNode(Location location, Size size, String text) {
-        super(location, size);
-        this.textArea = new TextAreaModified(new Location(0, 0), new Size(100, 100), text);
+    public TextNode(Location location, Size size, String text, Node parent) {
+        super(location, size, parent);
+        this.textArea = new TextAreaModified(new Location(0, 0), new Size(100, 100), text, this);
         this.addNode(this.textArea);
     }
 
-    public TextNode(Location location, Size size) {
-        this(location, size, "Zone de texte");
+    public TextNode(Location location, Size size, Node parent) {
+        this(location, size, "Zone de texte", parent);
     }
 
     @Override
@@ -36,5 +38,19 @@ public class TextNode extends Node {
     public void setSelected(boolean selected) {
         this.addNodeSelected(this.textArea);
         super.setSelected(selected);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyChar() == '/' && this.parent.isCanChangeChild()) {
+            this.parent.removeNode(this);
+            FractionNode fractionNode = new FractionNode(this.location, this.size, this.textArea.getBeforeCaret(), this.textArea.getAfterCaret(), this.parent);
+            this.parent.addNode(fractionNode);
+            this.parent.addNodeSelected(fractionNode);
+            fractionNode.selectDeno();
+            this.parent.update();
+            return;
+        }
+        super.keyPressed(e);
     }
 }

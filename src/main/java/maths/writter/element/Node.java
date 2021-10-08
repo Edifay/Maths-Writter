@@ -28,14 +28,19 @@ public abstract class Node implements FrameListener {
 
     protected boolean over = false;
 
-    public Node(final Location location, final Size size) {
-        this(location, size, false);
+    protected Node parent;
+
+    protected boolean canChangeChild = true;
+
+    public Node(final Location location, final Size size, Node parent) {
+        this(location, size, parent, false);
     }
 
-    public Node(final Location location, final Size size, boolean movable) {
-        this.movable = false;
-        this.location = location;
+    public Node(final Location location, final Size size, Node parent, boolean movable) {
+        this.movable = movable;
+        this.location = location.clone();
         this.size = new Size(0, 0);
+        this.parent = parent == null ? this : parent;
         this.setSize(size);
         this.update();
     }
@@ -81,11 +86,20 @@ public abstract class Node implements FrameListener {
         }
     }
 
-    public void draw(Graphics2D g, Node parent) {
+    public void draw(Graphics2D g) {
         synchronized (this.size) {
+
+            Size preferredSize = this.getPreferredSize();
+            if (this.size.getWidth() != preferredSize.getWidth() && parent.getSize().getWidth() != preferredSize.getWidth())
+                if (parent.getSize().getWidth() > preferredSize.getWidth() || parent.getSize().getWidth() != this.size.getWidth())
+                    parent.update();
+            if (this.size.getHeight() != preferredSize.getHeight() && parent.getSize().getHeight() != preferredSize.getHeight())
+                if (parent.getSize().getHeight() > preferredSize.getHeight() || parent.getSize().getHeight() != this.size.getHeight())
+                    parent.update();
+
             for (Node node : this.nodes)
                 if (node.isHaveToBeDraw())
-                    node.draw((Graphics2D) g.create(node.location.getX(), node.location.getY(), node.size.getWidth(), node.size.getHeight()), parent == null ? this : parent);
+                    node.draw((Graphics2D) g.create(node.location.getX(), node.location.getY(), node.size.getWidth(), node.size.getHeight()));
             if (selected)
                 g.drawRect(0, 0, size.getWidth() - 1, size.getHeight() - 1);
         }
@@ -384,5 +398,21 @@ public abstract class Node implements FrameListener {
 
     public boolean isMovable() {
         return movable;
+    }
+
+    public Node getParent() {
+        return parent;
+    }
+
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
+
+    public boolean isCanChangeChild() {
+        return canChangeChild;
+    }
+
+    public void setCanChangeChild(boolean canChangeChild) {
+        this.canChangeChild = canChangeChild;
     }
 }

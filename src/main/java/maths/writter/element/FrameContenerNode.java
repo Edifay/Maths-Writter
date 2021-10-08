@@ -15,7 +15,7 @@ public class FrameContenerNode extends Node {
     protected Manager manager;
 
     public FrameContenerNode(Location location, Size size, Manager manager) {
-        super(location, size);
+        super(location, size, null);
         this.manager = manager;
     }
 

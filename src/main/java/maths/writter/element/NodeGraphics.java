@@ -17,8 +17,6 @@ public class NodeGraphics extends JPanel {
     private FrameListener lastFrameListener;
     protected Frame frame;
 
-    protected TextAreaModified textAreaModified;
-
     protected FrameContenerNode contener;
 
     public NodeGraphics(Frame frame, FrameContenerNode contener) {
@@ -26,8 +24,6 @@ public class NodeGraphics extends JPanel {
         this.frame = frame;
         this.setFocusable(true);
         this.requestFocus();
-        this.textAreaModified = new TextAreaModified(new Location(0, 0), new Size(200, 200), "Ceci est un test avec des L est des p je ne sais pas ce que ca va DONNER !");
-        this.textAreaModified.setSize(this.textAreaModified.getPreferredSize());
 
         this.contener = contener;
 /*
@@ -47,7 +43,7 @@ public class NodeGraphics extends JPanel {
         /*this.textAreaModified.draw(g.create(this.textAreaModified.getLocation().getX(), this.textAreaModified.getLocation().getY(),
                 this.textAreaModified.getSize().getWidth() + 1, this.textAreaModified.getSize().getHeight() + 1));*/
         this.contener.draw((Graphics2D) g.create(this.contener.location.getX(), this.contener.location.getY(),
-                this.contener.size.getWidth(), this.contener.size.getHeight()), null);
+                this.contener.size.getWidth(), this.contener.size.getHeight()));
         /*
         for (Node node : this.frame.getNodes())
             node.draw((Graphics2D) g.create(node.real_location.getX(), node.real_location.getY(), node.real_size.getWidth(), node.real_size.getHeight()), null);*/

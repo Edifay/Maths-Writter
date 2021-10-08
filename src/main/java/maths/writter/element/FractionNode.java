@@ -6,51 +6,62 @@ import dependences.Size;
 import java.awt.*;
 
 public class FractionNode extends Node {
-    protected TextNode numerator;
-    protected TextNode denominator;
+    protected Node numerator;
+    protected Node denominator;
 
-    public FractionNode(Location location, Size size, TextNode numerator, TextNode denominator) {
-        super(location, size);
+    public FractionNode(Location location, Size size, TextNode numerator, TextNode denominator, Node parent) {
+        super(location, size, parent);
         this.numerator = numerator;
         this.denominator = denominator;
+        this.numerator.setParent(this);
+        this.denominator.setParent(this);
         this.addNode(this.numerator);
         this.addNode(this.denominator);
+        this.canChangeChild = false;
     }
 
     @Override
-    public void draw(Graphics2D g, Node parent) {
+    public void draw(Graphics2D g) {
         int biggest_width = 0;
         for (Node node : this.nodes)
             if (node.getSize().getWidth() > biggest_width)
                 biggest_width = node.getSize().getWidth();
 
         g.fillRoundRect(this.size.getWidth() / 2 - biggest_width / 2, this.size.getHeight() / 2 - 1, biggest_width, 2, 8, 8);
-        super.draw(g, parent);
+        super.draw(g);
     }
 
-    public FractionNode(Location location, Size size, String numerator, String denominator) {
-        this(location, size,
-                new TextNode(new Location(10, 10), new Size(20, 20), numerator),
-                new TextNode(new Location(10, 50), new Size(20, 20), denominator)
-        );
+    public FractionNode(Location location, Size size, String numerator, String denominator, Node parent) {
+        super(location, size, parent);
+        this.numerator = new TextNode(new Location(10, 10), new Size(20, 20), numerator, this);
+        this.denominator = new TextNode(new Location(10, 50), new Size(20, 20), denominator, this);
+        this.addNode(this.numerator);
+        this.addNode(this.denominator);
+        this.canChangeChild = false;
     }
 
-    public FractionNode(Location location, Size size, TextNode numerator, String denominator) {
-        this(location, size,
-                numerator,
-                new TextNode(new Location(10, 50), new Size(20, 20), denominator)
-        );
+    public FractionNode(Location location, Size size, TextNode numerator, String denominator, Node parent) {
+        super(location, size, parent);
+        this.numerator = numerator;
+        this.denominator = new TextNode(new Location(10, 50), new Size(20, 20), denominator, this);
+        this.numerator.setParent(this);
+        this.addNode(this.numerator);
+        this.addNode(this.denominator);
+        this.canChangeChild = false;
     }
 
-    public FractionNode(Location location, Size size, String numerator, TextNode denominator) {
-        this(location, size,
-                new TextNode(new Location(10, 50), new Size(20, 20), numerator),
-                denominator
-        );
+    public FractionNode(Location location, Size size, String numerator, TextNode denominator, Node parent) {
+        super(location, size, parent);
+        this.numerator = new TextNode(new Location(10, 50), new Size(20, 20), numerator, parent);
+        this.denominator = denominator;
+        this.denominator.setParent(this);
+        this.addNode(this.numerator);
+        this.addNode(this.denominator);
+        this.canChangeChild = false;
     }
 
-    public FractionNode(Location location, Size size) {
-        this(location, size, "num", "deno");
+    public FractionNode(Location location, Size size, Node parent) {
+        this(location, size, "num", "deno", parent);
     }
 
     @Override
@@ -95,5 +106,9 @@ public class FractionNode extends Node {
         this.denominator.setLocation(new Location((int) (this.size.getWidth() / 2d - denominator_size.getWidth() / 2d), (int) (this.size.getHeight() / 4d * 3 - denominator_size.getHeight() / 2d)));
         this.numerator.setSize(numerator_size);
         this.denominator.setSize(denominator_size);
+    }
+
+    public void selectDeno() {
+        this.addNodeSelected(this.denominator);
     }
 }

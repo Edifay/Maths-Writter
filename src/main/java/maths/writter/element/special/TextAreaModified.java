@@ -31,26 +31,20 @@ public class TextAreaModified extends Node {
 
     protected boolean moving_text = false;
 
-    public TextAreaModified(Location location, Size size) {
-        this(location, size, "Empty");
+    public TextAreaModified(Location location, Size size, Node parent) {
+        this(location, size, "Empty", parent);
     }
 
-    public TextAreaModified(Location location, Size size, String text) {
-        super(location, size);
+    public TextAreaModified(Location location, Size size, String text, Node parent) {
+        super(location, size, parent);
         this.text_manager = new TextManager(text);
         this.preferredSize = size.clone();
         remakePreferredSize();
     }
 
     @Override
-    public void draw(Graphics2D g, Node parent) {
+    public void draw(Graphics2D g) {
         Graphics2D tempo = (Graphics2D) g.create();
-        if (this.size.getWidth() != preferredSize.getWidth() && parent.getSize().getWidth() != preferredSize.getWidth())
-            if (parent.getSize().getWidth() > preferredSize.getWidth() || parent.getSize().getWidth() != this.size.getWidth())
-                parent.update();
-        if (this.size.getHeight() != this.preferredSize.getHeight() && parent.getSize().getHeight() != preferredSize.getHeight())
-            if (parent.getSize().getHeight() > preferredSize.getHeight() || parent.getSize().getHeight() != this.size.getHeight())
-                parent.update();
 
         g.setFont(font);
         this.text_manager.forEachLine((text, line_number) -> g.drawString(text, 0, this.caret_height * (line_number + 1)));
@@ -392,5 +386,29 @@ public class TextAreaModified extends Node {
         moving_text = false;
         shift_down = false;
         super.setSelected(selected);
+    }
+
+    public String getBeforeCaret() {
+        StringBuilder stringBuilder = new StringBuilder();
+        this.text_manager.forEachLine((text, line_number) -> {
+            if (line_number < this.text_manager.getCaretLineNumber())
+                stringBuilder.append(text).append("\n");
+            else if (line_number == this.text_manager.getCaretLineNumber())
+                stringBuilder.append(text.substring(0, this.text_manager.getCaretLocation().getX()));
+        });
+        return stringBuilder.toString();
+    }
+
+    public String getAfterCaret() {
+        StringBuilder stringBuilder = new StringBuilder();
+        this.text_manager.forEachLine((text, line_number) -> {
+            if (line_number > this.text_manager.getCaretLineNumber()) {
+                stringBuilder.append(text);
+                if (line_number != this.text_manager.size() - 1)
+                    stringBuilder.append("\n");
+            } else if (line_number == this.text_manager.getCaretLineNumber())
+                stringBuilder.append(text.substring(this.text_manager.getCaretLocation().getX()));
+        });
+        return stringBuilder.toString();
     }
 }

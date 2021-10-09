@@ -30,10 +30,12 @@ public abstract class Node implements FrameListener {
 
     protected Node parent;
 
+    protected boolean dragged = false;
+
     protected boolean canChangeChild = true;
 
     public Node(final Location location, final Size size, Node parent) {
-        this(location, size, parent, false);
+        this(location, size, parent, true);
     }
 
     public Node(final Location location, final Size size, Node parent, boolean movable) {
@@ -99,20 +101,20 @@ public abstract class Node implements FrameListener {
 
     public void update(Node parent, boolean canCallParent) {
         if (!this.parent.equals(parent) && this.parent != this && canCallParent) { // Si un parent existe !
-            //System.out.println(this.getClass().getSimpleName() + " call this parent : " + this.parent.getClass().getSimpleName());
+            System.out.println(this.getClass().getSimpleName() + " call this parent : " + this.parent.getClass().getSimpleName());
             this.parent.update(this);
         } else { // Si le retour vers le parent n'est pas possible !
             resizeChild();
             if (!this.nodes.contains(parent)) { // Si le caller n'est pas un enfant direct
                 if (this.nodes.size() == 0) {
-                    //System.out.println(this.getClass().getSimpleName() + " : Update but don't have child !");
+                    System.out.println(this.getClass().getSimpleName() + " : Update but don't have child !");
                 }
                 for (Node node : this.nodes) {
-                    //System.out.println(this.getClass().getSimpleName() + " call this child : " + node.getClass().getSimpleName());
+                    System.out.println(this.getClass().getSimpleName() + " call this child : " + node.getClass().getSimpleName());
                     node.update(this);
                 }
             } else { // si l'enfant est un caller direct alors on update que l'enfant direct !
-                //System.out.println(this.getClass().getSimpleName() + " :  to direct : " + parent.getClass().getSimpleName());
+                System.out.println(this.getClass().getSimpleName() + " :  to direct : " + parent.getClass().getSimpleName());
                 parent.update(this);
             }
         }
@@ -120,16 +122,27 @@ public abstract class Node implements FrameListener {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
-        if (!selected)
+        if (!selected) {
             this.clearSelected();
+            this.moveInAction = false;
+            this.locationInAction = null;
+        }
     }
 
     @Override
     public String toString() {
         return "Node{" +
-                "location=" + location +
+                "multiple_select=" + multiple_select +
+                ", movable=" + movable +
+                ", location=" + location +
                 ", size=" + size +
+                ", haveToBeDraw=" + haveToBeDraw +
                 ", selected=" + selected +
+                ", over=" + over +
+                ", dragged=" + dragged +
+                ", canChangeChild=" + canChangeChild +
+                ", moveInAction=" + moveInAction +
+                ", locationInAction=" + locationInAction +
                 '}';
     }
 
@@ -254,12 +267,15 @@ public abstract class Node implements FrameListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (this.nodes_selected.size() == 0 && this.movable)
+        this.dragged = true;
+        if (this.movable) {
             if (e.getX() < 5 || e.getY() < 5 || this.size.getWidth() - 5 < e.getX() || this.getSize().getHeight() - 5 < e.getY()) {
                 this.moveInAction = true;
                 this.locationInAction = new Location(e.getX(), e.getY());
                 return;
             }
+        }
+
         Node node = this.getCollisionWithSelectedNodes(new Location(e.getX(), e.getY()));
         if (node != null) {
             node.mousePressed(
@@ -290,8 +306,8 @@ public abstract class Node implements FrameListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (this.moveInAction)
-            this.moveInAction = false;
+        this.dragged = false;
+        this.moveInAction = false;
         Node node = this.getCollisionWithSelectedNodes(new Location(e.getX(), e.getY()));
         if (node != null)
             node.mouseReleased(
@@ -312,6 +328,19 @@ public abstract class Node implements FrameListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        Node nodeDragged = null;
+        for (Node node : nodes)
+            if (node.dragged)
+                nodeDragged = node;
+        if (nodeDragged != null) {
+            nodeDragged.mouseDragged(
+                    new MouseEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
+                            e.getX() - nodeDragged.location.getX(), e.getY() - nodeDragged.location.getY(),
+                            e.getClickCount(), e.isPopupTrigger(), e.getButton())
+            );
+            return;
+        }
+
         if (this.moveInAction) {
             this.location.setLocation(this.location.getX() - (this.locationInAction.getX() - e.getX()), this.location.getY() - (this.locationInAction.getY() - e.getY()));
         } else {
@@ -326,11 +355,13 @@ public abstract class Node implements FrameListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (this.nodes_selected.size() == 0 && this.movable)
-            if (e.getX() < 5 || e.getY() < 5 || this.size.getWidth() - 5 < e.getX() || this.getSize().getHeight() - 5 < e.getY())
+        if (this.movable) {
+            if (e.getX() < 5 || e.getY() < 5 || this.size.getWidth() - 5 < e.getX() || this.getSize().getHeight() - 5 < e.getY()) {
                 Manager.manager_last_Manager.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-            else
+                return;
+            } else if (this.nodes_selected.size() == 0)
                 Manager.manager_last_Manager.setCursor(Cursor.getDefaultCursor());
+        }
 
         Node node = this.getCollisionWithSelectedNodes(new Location(e.getX(), e.getY()));
         if (node != null) {
@@ -388,7 +419,6 @@ public abstract class Node implements FrameListener {
             if (height > this.size.getHeight())
                 height = this.size.getHeight();
 
-
             node.setLocation(new Location((int) (this.size.getWidth() / 2d - width / 2d), (int) (this.size.getHeight() / 2d - height / 2d)));
             node.setSize(new Size(width, height));
         }
@@ -421,5 +451,13 @@ public abstract class Node implements FrameListener {
 
     public void setCanChangeChild(boolean canChangeChild) {
         this.canChangeChild = canChangeChild;
+    }
+
+    public void setDragged(boolean dragged) {
+        this.dragged = dragged;
+    }
+
+    public boolean isDragged() {
+        return dragged;
     }
 }

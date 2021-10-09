@@ -27,7 +27,7 @@ public class FractionNode extends Node {
             if (node.getSize().getWidth() > biggest_width)
                 biggest_width = node.getSize().getWidth();
 
-        g.fillRoundRect(this.size.getWidth() / 2 - biggest_width / 2, this.numerator.getSize().getHeight(), biggest_width, 2, 8, 8);
+        g.fillRoundRect(this.size.getWidth() / 2 - biggest_width / 2 - 5, this.numerator.getSize().getHeight(), this.size.getWidth(), 2, 8, 8);
         super.draw(g);
     }
 
@@ -69,7 +69,7 @@ public class FractionNode extends Node {
         if (denominator != null & this.numerator != null) {
             Size size_deno = this.denominator.getPreferredSize();
             Size size_num = this.numerator.getPreferredSize();
-            return new Size(Math.max(size_deno.getWidth(), size_num.getWidth()), size_deno.getHeight() + size_num.getHeight() + 2);
+            return new Size(Math.max(size_deno.getWidth(), size_num.getWidth()) + 10, size_deno.getHeight() + size_num.getHeight() + 2);
         }
         return this.size;
     }
@@ -123,6 +123,7 @@ public class FractionNode extends Node {
         else if (this.denominator == null)
             this.denominator = node;
 
+        node.setMovable(false);
         super.addNode(node);
     }
 }

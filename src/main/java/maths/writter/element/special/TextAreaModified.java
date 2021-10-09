@@ -94,7 +94,7 @@ public class TextAreaModified extends Node {
         double total = 0;
         String actual_line = this.text_manager.getLine(line);
 
-        for (int i = 0; i < actual_line.length(); i++) {
+        for (int i = 1; i < actual_line.length(); i++) {
             if (total >= positionX) {
                 double caretBefore = (int) (font.getStringBounds(actual_line.substring(0, i - 1), frc).getWidth());
                 double positionOnCharacter = positionX - caretBefore;
@@ -110,7 +110,7 @@ public class TextAreaModified extends Node {
     }
 
     protected int getCharacterLineForHeight(int positionY) {
-        return Math.min(this.text_manager.size() - 1, positionY / this.caret_height);
+        return Math.max(Math.min(this.text_manager.size() - 1, positionY / this.caret_height), 0);
     }
 
 
@@ -151,11 +151,11 @@ public class TextAreaModified extends Node {
                     this.text_manager.getCaretLocation().setLocation(0, this.text_manager.getCaretLocation().getY() + 1);
                     break;
                 case KeyEvent.VK_UP:
-                    if (!shift_down)
+                    if (!shift_down) {
                         if (this.text_manager.isSelect())
                             this.text_manager.resetSelection();
-                        else if (this.text_manager.isNotSelect())
-                            this.text_manager.defineSelectionPointToCaretLocation();
+                    } else if (this.text_manager.isNotSelect())
+                        this.text_manager.defineSelectionPointToCaretLocation();
 
                     if (this.text_manager.getCaretLocation().getY() != 0)
                         this.text_manager.getCaretLocation().setLocation(
@@ -164,11 +164,11 @@ public class TextAreaModified extends Node {
                         );
                     break;
                 case KeyEvent.VK_DOWN:
-                    if (!shift_down)
+                    if (!shift_down) {
                         if (this.text_manager.isSelect())
                             this.text_manager.resetSelection();
-                        else if (this.text_manager.isNotSelect())
-                            this.text_manager.defineSelectionPointToCaretLocation();
+                    } else if (this.text_manager.isNotSelect())
+                        this.text_manager.defineSelectionPointToCaretLocation();
                     if (this.text_manager.getCaretLocation().getY() != this.text_manager.size() - 1)
                         this.text_manager.getCaretLocation().setLocation(
                                 Math.min(this.text_manager.getCaretLocation().getX(), this.text_manager.getLine(this.text_manager.getCaretLocation().getY() + 1).length()),
@@ -201,9 +201,14 @@ public class TextAreaModified extends Node {
                         else if (!shift_down && this.text_manager.isSelect())
                             this.text_manager.resetSelection();
                         this.text_manager.moveCaretLeft();
-                    } else if (!shift_down)
-                        if (this.text_manager.isSelect())
-                            this.text_manager.resetSelection();
+                    } else {
+                        if (!shift_down)
+                            if (this.text_manager.isSelect())
+                                this.text_manager.resetSelection();
+                        if (this.text_manager.getCaretLocation().getY() > 0)
+                            this.text_manager.setCaret_location(new Location(this.text_manager.getLine(this.text_manager.getCaretLocation().getY() - 1).length(),
+                                    this.text_manager.getCaretLocation().getY() - 1));
+                    }
                     break;
                 case KeyEvent.VK_RIGHT:
                     if (this.text_manager.getCaretLocation().getX() != text_manager.getCaretLine().length()) {
@@ -212,9 +217,14 @@ public class TextAreaModified extends Node {
                         else if (!shift_down && this.text_manager.isSelect())
                             this.text_manager.resetSelection();
                         this.text_manager.moveCaretRight();
-                    } else if (!shift_down)
-                        if (this.text_manager.isSelect())
-                            this.text_manager.resetSelection();
+                    } else {
+                        if (!shift_down)
+                            if (this.text_manager.isSelect())
+                                this.text_manager.resetSelection();
+                        if (this.text_manager.getCaretLocation().getY() < this.text_manager.text.size() - 1)
+                            this.text_manager.setCaret_location(new Location(0,
+                                    this.text_manager.getCaretLocation().getY() + 1));
+                    }
                     break;
                 case KeyEvent.VK_BACK_SPACE:
                     if (this.text_manager.isNotSelect()) {
@@ -298,6 +308,7 @@ public class TextAreaModified extends Node {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        this.dragged = true;
         Location location = getCharacterIndexForWidth(e.getX(), e.getY());
         if (this.text_manager.isSelect()) {
             if (!((Math.max(this.text_manager.getSelectionPoint().getX(), this.text_manager.getCaretLocation().getX())) > location.getX() && Math.min(this.text_manager.getSelectionPoint().getX(), this.text_manager.getCaretLocation().getX()) < location.getX())) {
@@ -314,6 +325,7 @@ public class TextAreaModified extends Node {
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        this.dragged = false;
         if (!moving_text && this.text_manager.isSelect()) {
             Location location = getCharacterIndexForWidth(e.getX(), e.getY());
             this.text_manager.getCaretLocation().setLocation(location);
@@ -360,7 +372,9 @@ public class TextAreaModified extends Node {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        if (!this.moving_text) {
+            Manager.manager_last_Manager.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+        }
     }
 
     @Override
@@ -377,27 +391,7 @@ public class TextAreaModified extends Node {
         super.setSelected(selected);
     }
 
-    public String getBeforeCaret() {
-        StringBuilder stringBuilder = new StringBuilder();
-        this.text_manager.forEachLine((text, line_number) -> {
-            if (line_number < this.text_manager.getCaretLineNumber())
-                stringBuilder.append(text).append("\n");
-            else if (line_number == this.text_manager.getCaretLineNumber())
-                stringBuilder.append(text.substring(0, this.text_manager.getCaretLocation().getX()));
-        });
-        return stringBuilder.toString();
-    }
-
-    public String getAfterCaret() {
-        StringBuilder stringBuilder = new StringBuilder();
-        this.text_manager.forEachLine((text, line_number) -> {
-            if (line_number > this.text_manager.getCaretLineNumber()) {
-                stringBuilder.append(text);
-                if (line_number != this.text_manager.size() - 1)
-                    stringBuilder.append("\n");
-            } else if (line_number == this.text_manager.getCaretLineNumber())
-                stringBuilder.append(text.substring(this.text_manager.getCaretLocation().getX()));
-        });
-        return stringBuilder.toString();
+    public TextManager getText_manager() {
+        return text_manager;
     }
 }

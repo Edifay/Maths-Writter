@@ -3,6 +3,7 @@ package maths.writter.element.special;
 import dependences.Location;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TextManager {
 
@@ -19,7 +20,8 @@ public class TextManager {
     public TextManager(String text) {
         this.text = new ArrayList<>();
         this.caret_location = new Location(0, 0);
-        this.text.add(text);
+        String[] lines = text.split("\n");
+        this.text.addAll(Arrays.asList(lines));
         updateTimeCaret();
     }
 
@@ -192,6 +194,30 @@ public class TextManager {
                 atReturn.append("\n");
         });
         return atReturn.toString();
+    }
+
+    public String getBeforeCaret() {
+        StringBuilder stringBuilder = new StringBuilder();
+        this.forEachLine((text, line_number) -> {
+            if (line_number < this.getCaretLineNumber())
+                stringBuilder.append(text).append("\n");
+            else if (line_number == this.getCaretLineNumber())
+                stringBuilder.append(text.substring(0, this.getCaretLocation().getX()));
+        });
+        return stringBuilder.toString();
+    }
+
+    public String getAfterCaret() {
+        StringBuilder stringBuilder = new StringBuilder();
+        this.forEachLine((text, line_number) -> {
+            if (line_number > this.getCaretLineNumber()) {
+                stringBuilder.append(text);
+                if (line_number != this.size() - 1)
+                    stringBuilder.append("\n");
+            } else if (line_number == this.getCaretLineNumber())
+                stringBuilder.append(text.substring(this.getCaretLocation().getX()));
+        });
+        return stringBuilder.toString();
     }
 
     public synchronized void insertLineAtCaret(String text) {

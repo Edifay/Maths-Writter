@@ -43,7 +43,7 @@ public class NewNodeListener implements FrameListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            this.manager.changeListener(new DefaultListener(this.manager));
+            this.manager.changeListener(this.manager.getContener());
         }
     }
 
@@ -57,7 +57,6 @@ public class NewNodeListener implements FrameListener {
         synchronized (key) {
             default_location = new Location(e.getX(), e.getY());
             actual = new TextNode(default_location.clone(), new Size(100, 100), this.manager.getContener());
-            actual.setMovable(true);
             this.manager.getContener().addNode(actual);
             this.manager.getContener().addNodeSelected(actual);
         }
@@ -72,7 +71,7 @@ public class NewNodeListener implements FrameListener {
                 actual.setSize(rectangleArea.getSize());
                 actual = null;
             }
-            this.manager.changeListener(new DefaultListener(this.manager));
+            this.manager.changeListener(this.manager.getContener());
         }
     }
 

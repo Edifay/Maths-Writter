@@ -133,6 +133,19 @@ public class FrameContenerNode extends Node {
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        Node nodeDragged = null;
+        for (Node node : nodes)
+            if (node.dragged)
+                nodeDragged = node;
+        if (nodeDragged != null) {
+            nodeDragged.mouseDragged(
+                    new MouseEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
+                            e.getX() - nodeDragged.location.getX(), e.getY() - nodeDragged.location.getY(),
+                            e.getClickCount(), e.isPopupTrigger(), e.getButton())
+            );
+            return;
+        }
+
         Node node = this.manager.getContener().getCollisionWithSelectedNodes(new Location(e.getX(), e.getY()));
         if (node != null)
             node.mouseDragged(

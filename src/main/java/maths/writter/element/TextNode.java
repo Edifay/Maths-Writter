@@ -43,8 +43,9 @@ public class TextNode extends Node {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyChar() == '/' && this.parent.isCanChangeChild()) {
+            System.err.println("____________________________________________________________________");
             this.parent.removeNode(this);
-            FractionNode fractionNode = new FractionNode(this.location, this.size, this.textArea.getBeforeCaret(), this.textArea.getAfterCaret(), this.parent);
+            FractionNode fractionNode = new FractionNode(this.location, this.size, this.textArea.getText_manager().getBeforeCaret(), this.textArea.getText_manager().getAfterCaret(), this.parent);
             this.parent.addNode(fractionNode);
             this.parent.addNodeSelected(fractionNode);
             fractionNode.selectDeno();

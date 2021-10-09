@@ -17,7 +17,7 @@ public class FractionNode extends Node {
         this.denominator.setParent(this);
         this.addNode(this.numerator);
         this.addNode(this.denominator);
-        this.canChangeChild = false;
+        this.canChangeChild = true;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class FractionNode extends Node {
             if (node.getSize().getWidth() > biggest_width)
                 biggest_width = node.getSize().getWidth();
 
-        g.fillRoundRect(this.size.getWidth() / 2 - biggest_width / 2, this.size.getHeight() / 2 - 1, biggest_width, 2, 8, 8);
+        g.fillRoundRect(this.size.getWidth() / 2 - biggest_width / 2, this.numerator.getSize().getHeight(), biggest_width, 2, 8, 8);
         super.draw(g);
     }
 
@@ -37,7 +37,7 @@ public class FractionNode extends Node {
         this.denominator = new TextNode(new Location(10, 50), new Size(20, 20), denominator, this);
         this.addNode(this.numerator);
         this.addNode(this.denominator);
-        this.canChangeChild = false;
+        this.canChangeChild = true;
     }
 
     public FractionNode(Location location, Size size, TextNode numerator, String denominator, Node parent) {
@@ -47,7 +47,7 @@ public class FractionNode extends Node {
         this.numerator.setParent(this);
         this.addNode(this.numerator);
         this.addNode(this.denominator);
-        this.canChangeChild = false;
+        this.canChangeChild = true;
     }
 
     public FractionNode(Location location, Size size, String numerator, TextNode denominator, Node parent) {
@@ -57,7 +57,7 @@ public class FractionNode extends Node {
         this.denominator.setParent(this);
         this.addNode(this.numerator);
         this.addNode(this.denominator);
-        this.canChangeChild = false;
+        this.canChangeChild = true;
     }
 
     public FractionNode(Location location, Size size, Node parent) {
@@ -66,20 +66,12 @@ public class FractionNode extends Node {
 
     @Override
     public Size getPreferredSize() {
-        Size biggest = new Size(10, 10);
-        for (Node node : nodes) {
-            Size preferred_size = node.getPreferredSize();
-            if (preferred_size.getWidth() > biggest.getWidth())
-                biggest.setWidth(preferred_size.getWidth());
-            if (preferred_size.getHeight() > biggest.getHeight())
-                biggest.setHeight(preferred_size.getHeight() + 30);
+        if (denominator != null & this.numerator != null) {
+            Size size_deno = this.denominator.getPreferredSize();
+            Size size_num = this.numerator.getPreferredSize();
+            return new Size(Math.max(size_deno.getWidth(), size_num.getWidth()), size_deno.getHeight() + size_num.getHeight() + 2);
         }
-        return biggest;
-    }
-
-    @Override
-    public void update() {
-        super.update();
+        return this.size;
     }
 
     @Override
@@ -93,8 +85,7 @@ public class FractionNode extends Node {
         if (denominator_size.getHeight() > this.size.getHeight())
             denominator_size.setHeight(this.size.getHeight());
 
-
-        Size numerator_size = this.numerator.getPreferredSize();
+        Size numerator_size = this.numerator.getPreferredSize().clone();
 
         if (numerator_size.getWidth() > this.size.getWidth())
             numerator_size.setWidth(this.size.getWidth());
@@ -102,13 +93,36 @@ public class FractionNode extends Node {
             numerator_size.setHeight(this.size.getHeight());
 
 
-        this.numerator.setLocation(new Location((int) (this.size.getWidth() / 2d - numerator_size.getWidth() / 2d), (int) (this.size.getHeight() / 4d - numerator_size.getHeight() / 2d)));
-        this.denominator.setLocation(new Location((int) (this.size.getWidth() / 2d - denominator_size.getWidth() / 2d), (int) (this.size.getHeight() / 4d * 3 - denominator_size.getHeight() / 2d)));
+        this.numerator.setLocation(new Location((int) (this.size.getWidth() / 2d - numerator_size.getWidth() / 2d), 0));
+        this.denominator.setLocation(new Location((int) (this.size.getWidth() / 2d - denominator_size.getWidth() / 2d), numerator_size.getHeight() + 2));
         this.numerator.setSize(numerator_size);
         this.denominator.setSize(denominator_size);
     }
 
     public void selectDeno() {
         this.addNodeSelected(this.denominator);
+    }
+
+    @Override
+    public void removeNode(Node node) {
+        if (this.numerator == node)
+            this.numerator = null;
+        else if (this.denominator == node)
+            this.denominator = null;
+
+        super.removeNode(node);
+    }
+
+    @Override
+    public void addNode(Node node) {
+        if (this.nodes.size() >= 2)
+            return;
+
+        if (this.numerator == null)
+            this.numerator = node;
+        else if (this.denominator == null)
+            this.denominator = node;
+
+        super.addNode(node);
     }
 }

@@ -48,9 +48,10 @@ public class TextNode extends Node {
             this.parent.addNode(fractionNode);
             this.parent.addNodeSelected(fractionNode);
             fractionNode.selectDeno();
-            this.parent.update();
+            this.parent.update(fractionNode);
             return;
         }
         super.keyPressed(e);
     }
+
 }

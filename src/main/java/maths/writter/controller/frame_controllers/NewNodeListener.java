@@ -5,7 +5,6 @@ import dependences.RectangleArea;
 import dependences.Size;
 import maths.writter.Manager;
 import maths.writter.controller.FrameListener;
-import maths.writter.element.FractionNode;
 import maths.writter.element.Node;
 import maths.writter.element.TextNode;
 

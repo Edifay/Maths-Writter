@@ -3,7 +3,6 @@ package maths.writter;
 import dependences.Location;
 import dependences.Size;
 import maths.writter.controller.FrameListener;
-import maths.writter.controller.frame_controllers.DefaultListener;
 import maths.writter.element.FrameContenerNode;
 import maths.writter.element.Node;
 import maths.writter.graphics.Frame;

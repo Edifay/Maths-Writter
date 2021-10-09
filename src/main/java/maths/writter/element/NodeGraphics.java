@@ -1,9 +1,6 @@
 package maths.writter.element;
 
-import dependences.Location;
-import dependences.Size;
 import maths.writter.controller.FrameListener;
-import maths.writter.element.special.TextAreaModified;
 import maths.writter.graphics.Frame;
 
 import javax.swing.*;
@@ -26,10 +23,7 @@ public class NodeGraphics extends JPanel {
         this.requestFocus();
 
         this.contener = contener;
-/*
-        this.addKeyListener(this.textAreaModified);
-        this.addMouseListener(this.textAreaModified);
-        this.addMouseMotionListener(this.textAreaModified);*/
+
     }
 
     @Override
@@ -40,13 +34,8 @@ public class NodeGraphics extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-        /*this.textAreaModified.draw(g.create(this.textAreaModified.getLocation().getX(), this.textAreaModified.getLocation().getY(),
-                this.textAreaModified.getSize().getWidth() + 1, this.textAreaModified.getSize().getHeight() + 1));*/
         this.contener.draw((Graphics2D) g.create(this.contener.location.getX(), this.contener.location.getY(),
                 this.contener.size.getWidth(), this.contener.size.getHeight()));
-        /*
-        for (Node node : this.frame.getNodes())
-            node.draw((Graphics2D) g.create(node.real_location.getX(), node.real_location.getY(), node.real_size.getWidth(), node.real_size.getHeight()), null);*/
     }
 
     public synchronized void setFrameListener(FrameListener frameListener) {

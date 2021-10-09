@@ -178,14 +178,12 @@ public class FrameContenerNode extends Node {
             int base_width = width;
             int base_height = height;
 
-            if (width > this.size.getWidth())
-                width = this.size.getWidth();
-            if (height > this.size.getHeight())
-                height = this.size.getHeight();
-
+            if (width > this.size.getWidth()) width = this.size.getWidth();
+            if (height > this.size.getHeight()) height = this.size.getHeight();
 
             node.setLocation(new Location(node.getLocation().getX() - (base_width - width), node.getLocation().getY() - (base_height - height)));
             node.setSize(new Size(width, height));
         }
     }
+
 }

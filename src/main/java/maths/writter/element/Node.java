@@ -42,7 +42,7 @@ public abstract class Node implements FrameListener {
         this.size = new Size(0, 0);
         this.parent = parent == null ? this : parent;
         this.setSize(size);
-        this.update();
+        this.update(this);
     }
 
     public Location getLocation() {
@@ -54,7 +54,6 @@ public abstract class Node implements FrameListener {
     public Location setLocation(final Location location) {
         synchronized (this.location) {
             this.location.setLocation(location);
-            this.update();
             return this.location;
         }
     }
@@ -70,33 +69,22 @@ public abstract class Node implements FrameListener {
             if (size.getWidth() < 0) {
                 this.location.setX(this.location.getX() + size.getWidth());
                 this.size.setWidth(this.size.getWidth() - size.getWidth());
-            } else {
+            } else
                 this.size.setWidth(size.getWidth());
-            }
 
             if (size.getHeight() < 0) {
                 this.location.setY(this.location.getY() + size.getHeight());
                 this.size.setHeight(this.size.getHeight() - size.getHeight());
-            } else {
+            } else
                 this.size.setHeight(size.getHeight());
-            }
-            //this.size.setSize(size);
-            this.update();
+
+            this.update(this, false);
             return this.size;
         }
     }
 
     public void draw(Graphics2D g) {
         synchronized (this.size) {
-
-            Size preferredSize = this.getPreferredSize();
-            if (this.size.getWidth() != preferredSize.getWidth() && parent.getSize().getWidth() != preferredSize.getWidth())
-                if (parent.getSize().getWidth() > preferredSize.getWidth() || parent.getSize().getWidth() != this.size.getWidth())
-                    parent.update();
-            if (this.size.getHeight() != preferredSize.getHeight() && parent.getSize().getHeight() != preferredSize.getHeight())
-                if (parent.getSize().getHeight() > preferredSize.getHeight() || parent.getSize().getHeight() != this.size.getHeight())
-                    parent.update();
-
             for (Node node : this.nodes)
                 if (node.isHaveToBeDraw())
                     node.draw((Graphics2D) g.create(node.location.getX(), node.location.getY(), node.size.getWidth(), node.size.getHeight()));
@@ -105,10 +93,29 @@ public abstract class Node implements FrameListener {
         }
     }
 
-    public void update() {
-        resizeChild();
-        for (Node node : this.nodes)
-            node.update();
+    public void update(Node parent) {
+        this.update(parent, true);
+    }
+
+    public void update(Node parent, boolean canCallParent) {
+        if (!this.parent.equals(parent) && this.parent != this && canCallParent) { // Si un parent existe !
+            //System.out.println(this.getClass().getSimpleName() + " call this parent : " + this.parent.getClass().getSimpleName());
+            this.parent.update(this);
+        } else { // Si le retour vers le parent n'est pas possible !
+            resizeChild();
+            if (!this.nodes.contains(parent)) { // Si le caller n'est pas un enfant direct
+                if (this.nodes.size() == 0) {
+                    //System.out.println(this.getClass().getSimpleName() + " : Update but don't have child !");
+                }
+                for (Node node : this.nodes) {
+                    //System.out.println(this.getClass().getSimpleName() + " call this child : " + node.getClass().getSimpleName());
+                    node.update(this);
+                }
+            } else { // si l'enfant est un caller direct alors on update que l'enfant direct !
+                //System.out.println(this.getClass().getSimpleName() + " :  to direct : " + parent.getClass().getSimpleName());
+                parent.update(this);
+            }
+        }
     }
 
     public void setSelected(boolean selected) {

@@ -32,13 +32,17 @@ public class TextAreaModified extends Node {
     protected boolean moving_text = false;
 
     public TextAreaModified(Location location, Size size, Node parent) {
-        this(location, size, "Empty", parent);
+        this(location, size, "empty", parent);
     }
 
     public TextAreaModified(Location location, Size size, String text, Node parent) {
         super(location, size, parent);
         this.text_manager = new TextManager(text);
         this.preferredSize = size.clone();
+        if (!selected && this.text_manager.getString().replaceAll("\n", "").replaceAll(" ", "").equals("")) {
+            this.text_manager.insertInLine(0, 0, "empty");
+            this.update(this);
+        }
         remakePreferredSize();
     }
 

@@ -44,7 +44,7 @@ public abstract class Node implements FrameListener {
         this.size = new Size(0, 0);
         this.parent = parent == null ? this : parent;
         this.setSize(size);
-        this.update(this);
+        //this.update(this);
     }
 
     public Location getLocation() {
@@ -80,7 +80,7 @@ public abstract class Node implements FrameListener {
             } else
                 this.size.setHeight(size.getHeight());
 
-            this.update(this, false);
+            this.resizeChild();
             return this.size;
         }
     }

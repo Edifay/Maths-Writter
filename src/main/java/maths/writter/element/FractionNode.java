@@ -4,6 +4,7 @@ import dependences.Location;
 import dependences.Size;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class FractionNode extends Node {
     protected Node numerator;
@@ -125,5 +126,10 @@ public class FractionNode extends Node {
 
         node.setMovable(false);
         super.addNode(node);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        super.keyPressed(e);
     }
 }

@@ -34,8 +34,9 @@ public class NodeGraphics extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-        this.contener.draw((Graphics2D) g.create(this.contener.location.getX(), this.contener.location.getY(),
-                this.contener.size.getWidth(), this.contener.size.getHeight()));
+        g2d.setClip(-100, -100, 1920, 1080);
+
+        this.contener.draw(g2d);
     }
 
     public synchronized void setFrameListener(FrameListener frameListener) {

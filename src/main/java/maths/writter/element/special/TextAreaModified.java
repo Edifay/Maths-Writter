@@ -23,7 +23,7 @@ public class TextAreaModified extends Node {
     protected final FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
 
     protected TextManager text_manager;
-    protected Font font = new Font("Menlo", Font.PLAIN, 20);
+    protected Font font = new Font("Calibri", Font.PLAIN, 20);
 
     protected Size preferredSize;
 
@@ -98,8 +98,11 @@ public class TextAreaModified extends Node {
         double total = 0;
         String actual_line = this.text_manager.getLine(line);
 
+        total += font.getStringBounds(actual_line.charAt(0) + "", frc).getWidth();
+
         for (int i = 1; i < actual_line.length(); i++) {
             if (total >= positionX) {
+
                 double caretBefore = (int) (font.getStringBounds(actual_line.substring(0, i - 1), frc).getWidth());
                 double positionOnCharacter = positionX - caretBefore;
 
@@ -251,7 +254,6 @@ public class TextAreaModified extends Node {
                     if (this.text_manager.isSelect())
                         this.text_manager.deleteSelect();
                     this.text_manager.insertLineAtCharacter(e.getKeyChar() + "");
-                    this.text_manager.moveCaretRight();
                     break;
             }
         } else {
@@ -282,7 +284,6 @@ public class TextAreaModified extends Node {
                         this.text_manager.insertLineAtCharacter(at_add);
                         if (this.text_manager.isSelect())
                             this.text_manager.deleteSelect();
-                        this.text_manager.setCaret_location(new Location(this.text_manager.getCaretLocation().getX() + at_add.length(), this.text_manager.getCaretLocation().getY()));
                     } catch (UnsupportedFlavorException | IOException ex) {
                         ex.printStackTrace();
                     }

@@ -72,7 +72,16 @@ public class TextManager {
     }
 
     public synchronized void insertInLine(int line, int offset, String at_insert) {
-        this.text.set(line, new StringBuilder(this.text.get(line)).insert(offset, at_insert).toString());
+        String[] args = at_insert.split("\n");
+        this.text.set(line, new StringBuilder(this.text.get(line)).insert(offset, args[0]).toString());
+        for (int i = 1; i < args.length; i++)
+            this.insertLine(line + i, args[i]);
+        if (args.length == 1)
+            this.setCaret_location(new Location(this.getCaretLocation().getX() + args[0].length(), this.getCaretLocation().getY()));
+        else {
+            Location location = new Location(args[args.length - 1].length(), line + args.length - 1);
+            this.setCaret_location(location);
+        }
     }
 
     public synchronized void insertLine(int offset, String line) {

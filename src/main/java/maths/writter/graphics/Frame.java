@@ -21,6 +21,7 @@ public class Frame extends JFrame {
         this.setVisible(true);
 
         new Thread(() -> {
+            Thread.currentThread().setName("Repaint loop");
             try {
                 while (true) {
                     Thread.sleep(3);

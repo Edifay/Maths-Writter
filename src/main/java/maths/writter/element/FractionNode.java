@@ -2,11 +2,12 @@ package maths.writter.element;
 
 import dependences.Location;
 import dependences.Size;
+import maths.writter.element.special.MultiComponent;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class FractionNode extends Node {
+public class FractionNode extends Node implements MultiComponent {
     protected Node numerator;
     protected Node denominator;
 
@@ -34,8 +35,8 @@ public class FractionNode extends Node {
 
     public FractionNode(Location location, Size size, String numerator, String denominator, Node parent) {
         super(location, size, parent);
-        this.numerator = new TextNode(new Location(10, 10), new Size(20, 20), numerator, this);
-        this.denominator = new TextNode(new Location(10, 50), new Size(20, 20), denominator, this);
+        this.numerator = new MathsLineText(new Location(10, 10), new Size(20, 20), numerator, this);
+        this.denominator = new MathsLineText(new Location(10, 50), new Size(20, 20), denominator, this);
         this.addNode(this.numerator);
         this.addNode(this.denominator);
         this.canChangeChild = true;
@@ -44,7 +45,7 @@ public class FractionNode extends Node {
     public FractionNode(Location location, Size size, TextNode numerator, String denominator, Node parent) {
         super(location, size, parent);
         this.numerator = numerator;
-        this.denominator = new TextNode(new Location(10, 50), new Size(20, 20), denominator, this);
+        this.denominator = new MathsLineText(new Location(10, 50), new Size(20, 20), denominator, this);
         this.numerator.setParent(this);
         this.addNode(this.numerator);
         this.addNode(this.denominator);
@@ -53,7 +54,7 @@ public class FractionNode extends Node {
 
     public FractionNode(Location location, Size size, String numerator, TextNode denominator, Node parent) {
         super(location, size, parent);
-        this.numerator = new TextNode(new Location(10, 50), new Size(20, 20), numerator, parent);
+        this.numerator = new MathsLineText(new Location(10, 50), new Size(20, 20), numerator, parent);
         this.denominator = denominator;
         this.denominator.setParent(this);
         this.addNode(this.numerator);
@@ -131,5 +132,16 @@ public class FractionNode extends Node {
     @Override
     public void keyPressed(KeyEvent e) {
         super.keyPressed(e);
+    }
+
+    @Override
+    public Node getLastMultiComponentSelected() {
+        for (Node node : this.nodes_selected)
+            if (node instanceof MultiComponent)
+                if (((MultiComponent) node).getLastMultiComponentSelected() != null)
+                    return ((MultiComponent) node).getLastMultiComponentSelected();
+                else
+                    return node;
+        return null;
     }
 }

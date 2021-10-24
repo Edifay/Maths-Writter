@@ -10,6 +10,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import static maths.writter.Manager.startAway;
+
 public abstract class Node implements FrameListener {
 
     protected boolean multiple_select = false;
@@ -22,7 +24,11 @@ public abstract class Node implements FrameListener {
     protected final Location location;
     protected final Size size;
 
+    protected boolean disposed = false;
+
     protected boolean haveToBeDraw = true;
+
+    protected boolean linear_component = false;
 
     protected boolean selected;
 
@@ -101,20 +107,20 @@ public abstract class Node implements FrameListener {
 
     public void update(Node parent, boolean canCallParent) {
         if (!this.parent.equals(parent) && this.parent != this && canCallParent) { // Si un parent existe !
-            System.out.println(this.getClass().getSimpleName() + " call this parent : " + this.parent.getClass().getSimpleName());
+            //System.out.println(this.getClass().getSimpleName() + " call this parent : " + this.parent.getClass().getSimpleName());
             this.parent.update(this);
         } else { // Si le retour vers le parent n'est pas possible !
             resizeChild();
             if (!this.nodes.contains(parent)) { // Si le caller n'est pas un enfant direct
                 if (this.nodes.size() == 0) {
-                    System.out.println(this.getClass().getSimpleName() + " : Update but don't have child !");
+                    //System.out.println(this.getClass().getSimpleName() + " : Update but don't have child !");
                 }
                 for (Node node : this.nodes) {
-                    System.out.println(this.getClass().getSimpleName() + " call this child : " + node.getClass().getSimpleName());
+                    //System.out.println(this.getClass().getSimpleName() + " call this child : " + node.getClass().getSimpleName());
                     node.update(this);
                 }
             } else { // si l'enfant est un caller direct alors on update que l'enfant direct !
-                System.out.println(this.getClass().getSimpleName() + " :  to direct : " + parent.getClass().getSimpleName());
+                //System.out.println(this.getClass().getSimpleName() + " :  to direct : " + parent.getClass().getSimpleName());
                 parent.update(this);
             }
         }
@@ -149,6 +155,8 @@ public abstract class Node implements FrameListener {
     public void addNode(Node node) {
         synchronized (this.nodes) {
             this.nodes.add(node);
+            this.update(this);
+            this.update(this);
         }
     }
 
@@ -156,6 +164,8 @@ public abstract class Node implements FrameListener {
         synchronized (this.nodes) {
             this.nodes.remove(node);
             this.removeNodeSelected(node);
+            this.resizeChild();
+            this.update(this);
         }
     }
 
@@ -226,10 +236,12 @@ public abstract class Node implements FrameListener {
     public void keyPressed(KeyEvent e) {
         if (this.nodes_selected.size() != 0) {
             for (Node node : this.nodes_selected) {
-                node.keyPressed(new KeyEvent(
-                        e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
-                        e.getKeyCode(), e.getKeyChar(), e.getKeyLocation()
-                ));
+                startAway(() -> {
+                    node.keyPressed(new KeyEvent(
+                            e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
+                            e.getKeyCode(), e.getKeyChar(), e.getKeyLocation()
+                    ));
+                });
             }
         } else {
             if (e.getKeyCode() == 17)
@@ -241,10 +253,12 @@ public abstract class Node implements FrameListener {
     public void keyReleased(KeyEvent e) {
         if (this.nodes_selected.size() != 0) {
             for (Node node : this.nodes_selected) {
-                node.keyReleased(new KeyEvent(
-                        e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
-                        e.getKeyCode(), e.getKeyChar(), e.getKeyLocation()
-                ));
+                startAway(() -> {
+                    node.keyReleased(new KeyEvent(
+                            e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(),
+                            e.getKeyCode(), e.getKeyChar(), e.getKeyLocation()
+                    ));
+                });
             }
         } else {
             if (e.getKeyCode() == 17)
@@ -426,7 +440,8 @@ public abstract class Node implements FrameListener {
 
     @Override
     public void dispose() {
-
+        this.disposed = true;
+        this.parent.removeNode(this);
     }
 
     public void setMovable(boolean movable) {
@@ -459,5 +474,41 @@ public abstract class Node implements FrameListener {
 
     public boolean isDragged() {
         return dragged;
+    }
+
+    public void replace(Node at_remove, Node at_add) {
+        synchronized (this.nodes) {
+            if (this.nodes.contains(at_remove)) {
+                this.nodes.set(this.nodes.indexOf(at_remove), at_add);
+                if (this.nodes_selected.contains(at_remove)) {
+                    this.removeNodeSelected(at_remove);
+                    this.addNodeSelected(at_add);
+                }
+                this.update(this);
+            }
+        }
+    }
+
+    public void insertNode(int index, Node node) {
+        synchronized (this.nodes) {
+            this.nodes.add(index + 1, node);
+        }
+    }
+
+    public void elementBefore(Node node_caller) {
+        if (linear_component && this.nodes.contains(node_caller))
+            if (this.nodes.indexOf(node_caller) > 0) {
+                this.removeNodeSelected(node_caller);
+                this.addNodeSelected(this.nodes.get(this.nodes.indexOf(node_caller) - 1));
+            }
+    }
+
+    public void elementAfter(Node node_caller) {
+        System.out.println("Called : " + this.getClass().getSimpleName());
+        if (linear_component && this.nodes.contains(node_caller))
+            if (this.nodes.indexOf(node_caller) < this.nodes.size() - 1) {
+                this.removeNodeSelected(node_caller);
+                this.addNodeSelected(this.nodes.get(this.nodes.indexOf(node_caller) + 1));
+            }
     }
 }

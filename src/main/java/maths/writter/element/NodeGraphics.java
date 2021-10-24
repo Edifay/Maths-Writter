@@ -21,7 +21,7 @@ public class NodeGraphics extends JPanel {
         this.frame = frame;
         this.setFocusable(true);
         this.requestFocus();
-
+        this.setFocusTraversalKeysEnabled(false);
         this.contener = contener;
 
     }

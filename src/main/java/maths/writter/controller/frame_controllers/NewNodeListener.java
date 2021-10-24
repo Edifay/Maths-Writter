@@ -5,8 +5,8 @@ import dependences.RectangleArea;
 import dependences.Size;
 import maths.writter.Manager;
 import maths.writter.controller.FrameListener;
+import maths.writter.element.MathsLineText;
 import maths.writter.element.Node;
-import maths.writter.element.TextNode;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -56,7 +56,7 @@ public class NewNodeListener implements FrameListener {
     public void mousePressed(MouseEvent e) {
         synchronized (key) {
             default_location = new Location(e.getX(), e.getY());
-            actual = new TextNode(default_location.clone(), new Size(100, 100), this.manager.getContener());
+            actual = new MathsLineText(default_location.clone(), new Size(100, 100), this.manager.getContener());
             this.manager.getContener().addNode(actual);
             this.manager.getContener().addNodeSelected(actual);
         }

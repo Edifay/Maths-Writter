@@ -8,6 +8,8 @@ import maths.writter.element.Node;
 import maths.writter.graphics.Frame;
 
 import java.awt.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Manager {
 
@@ -40,6 +42,12 @@ public class Manager {
 
     public FrameContenerNode getContener() {
         return this.contener;
+    }
+
+    private static ExecutorService exe = Executors.newCachedThreadPool();
+
+    public synchronized static void startAway(Runnable runnable) {
+        exe.submit(runnable);
     }
 
 }

@@ -215,6 +215,9 @@ public class TextAreaModified extends Node {
                         if (this.text_manager.getCaretLocation().getY() > 0)
                             this.text_manager.setCaret_location(new Location(this.text_manager.getLine(this.text_manager.getCaretLocation().getY() - 1).length(),
                                     this.text_manager.getCaretLocation().getY() - 1));
+                        else
+                            this.parent.elementBefore(this);
+
                     }
                     break;
                 case KeyEvent.VK_RIGHT:
@@ -231,6 +234,8 @@ public class TextAreaModified extends Node {
                         if (this.text_manager.getCaretLocation().getY() < this.text_manager.text.size() - 1)
                             this.text_manager.setCaret_location(new Location(0,
                                     this.text_manager.getCaretLocation().getY() + 1));
+                        else
+                            this.parent.elementAfter(this);
                     }
                     break;
                 case KeyEvent.VK_BACK_SPACE:
@@ -242,6 +247,8 @@ public class TextAreaModified extends Node {
                                         this.text_manager.getLine(this.text_manager.getCaretLocation().getY() - 1).length(), this.text_manager.getCaretLine());
                                 this.text_manager.getCaretLocation().setLocation(size_before, this.text_manager.getCaretLocation().getY() - 1);
                                 this.text_manager.deleteLine(this.text_manager.getCaretLocation().getY() + 1);
+                            } else {
+                                this.parent.elementBefore(this);
                             }
                         } else {
                             this.text_manager.deleteCharacterInLine(this.text_manager.getCaretLocation().getY(), this.text_manager.getCaretLocation().getX() - 1);
@@ -290,6 +297,7 @@ public class TextAreaModified extends Node {
                     break;
             }
         }
+        this.update(this);
         this.update(this);
         this.text_manager.updateTimeCaret();
     }
@@ -384,19 +392,25 @@ public class TextAreaModified extends Node {
 
     @Override
     public void setSelected(boolean selected) {
-        if (!selected && this.text_manager.getString().replaceAll("\n", "").replaceAll(" ", "").equals("")) {
-            this.text_manager.insertInLine(0, 0, "empty");
-            this.update(this);
+        if (!selected && this.text_manager.getString().replaceAll("\n", "").replaceAll(" ", "").equals("") && !this.disposed) {
+            this.dispose();
+        } else {
+            pivot = false;
+            ctrl_down = false;
+            this.text_manager.resetSelection();
+            moving_text = false;
+            shift_down = false;
+            super.setSelected(selected);
         }
-        pivot = false;
-        ctrl_down = false;
-        this.text_manager.resetSelection();
-        moving_text = false;
-        shift_down = false;
-        super.setSelected(selected);
     }
 
     public TextManager getText_manager() {
         return text_manager;
+    }
+
+    @Override
+    public void dispose() {
+        this.disposed = true;
+        this.parent.dispose();
     }
 }

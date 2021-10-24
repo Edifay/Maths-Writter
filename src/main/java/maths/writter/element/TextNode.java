@@ -23,15 +23,7 @@ public class TextNode extends Node {
 
     @Override
     public Size getPreferredSize() {
-        Size biggest = new Size(10, 10);
-        for (Node node : nodes) {
-            Size preferred_size = node.getPreferredSize();
-            if (preferred_size.getWidth() > biggest.getWidth())
-                biggest.setWidth(preferred_size.getWidth() + 5);
-            if (preferred_size.getHeight() > biggest.getHeight())
-                biggest.setHeight(preferred_size.getHeight() + 5);
-        }
-        return biggest;
+        return this.textArea.getPreferredSize();
     }
 
     @Override
@@ -44,15 +36,29 @@ public class TextNode extends Node {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyChar() == '/' && this.parent.isCanChangeChild()) {
             //System.err.println("____________________________________________________________________");
-            this.parent.removeNode(this);
             FractionNode fractionNode = new FractionNode(this.location, this.size, this.textArea.getText_manager().getBeforeCaret(), this.textArea.getText_manager().getAfterCaret(), this.parent);
-            this.parent.addNode(fractionNode);
-            this.parent.addNodeSelected(fractionNode);
+            fractionNode.setMovable(false);
+            this.parent.replace(this, fractionNode);
             fractionNode.selectDeno();
-            this.parent.update(fractionNode);
             return;
         }
         super.keyPressed(e);
     }
 
+    @Override
+    public void elementAfter(Node node_caller) {
+        System.out.println("Get int !");
+        this.parent.elementAfter(this);
+    }
+
+    @Override
+    public void elementBefore(Node node_caller) {
+        System.out.println("Get in !");
+        this.parent.elementBefore(this);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+    }
 }

@@ -15,6 +15,7 @@ public class TextNode extends Node {
         super(location, size, parent);
         this.textArea = new TextAreaModified(new Location(0, 0), new Size(100, 100), text, this);
         this.addNode(this.textArea);
+        this.update(this);
     }
 
     public TextNode(Location location, Size size, Node parent) {
@@ -47,13 +48,11 @@ public class TextNode extends Node {
 
     @Override
     public void elementAfter(Node node_caller) {
-        System.out.println("Get int !");
         this.parent.elementAfter(this);
     }
 
     @Override
     public void elementBefore(Node node_caller) {
-        System.out.println("Get in !");
         this.parent.elementBefore(this);
     }
 

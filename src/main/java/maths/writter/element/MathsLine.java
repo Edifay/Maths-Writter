@@ -46,14 +46,13 @@ public class MathsLine extends Node implements MultiComponent {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.println("IN ! : " + e.getKeyCode());
         if (e.getKeyCode() == KeyEvent.VK_TAB && this.nodes_selected.size() != 0 && this.getLastMultiComponentSelected() == null) {
-            System.out.println("ADD !");
-            TextNode textNode = new TextNode(new Location(0, 0), new Size(0, 0), "nothing", this);
+            TextNode textNode = new TextNode(new Location(0, 0), new Size(0, 0), "", this);
             textNode.setMovable(false);
             this.insertNode(this.nodes.indexOf(this.nodes_selected.get(0)), textNode);
             this.clearSelected();
             this.addNodeSelected(textNode);
+            this.update(this);
             return;
         }
         super.keyPressed(e);
@@ -72,13 +71,11 @@ public class MathsLine extends Node implements MultiComponent {
 
     @Override
     public void elementAfter(Node node_caller) {
-        System.out.println("Maths line get !");
         super.elementAfter(node_caller);
     }
 
     @Override
     public void elementBefore(Node node_caller) {
-        System.out.println("Maths line get !");
         super.elementBefore(node_caller);
     }
 }

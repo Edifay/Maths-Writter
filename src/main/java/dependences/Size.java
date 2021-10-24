@@ -29,6 +29,7 @@ public class Size {
     }
 
     public synchronized void setSize(final int width, final int height) {
+    public void setSize(final int width, final int height) {
         this.width = width;
         this.height = height;
     }

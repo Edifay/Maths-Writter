@@ -111,6 +111,7 @@ public abstract class Node implements FrameListener {
             this.parent.update(this);
         } else { // Si le retour vers le parent n'est pas possible !
             resizeChild();
+            resizeChild();
             if (!this.nodes.contains(parent)) { // Si le caller n'est pas un enfant direct
                 if (this.nodes.size() == 0) {
                     //System.out.println(this.getClass().getSimpleName() + " : Update but don't have child !");
@@ -177,10 +178,11 @@ public abstract class Node implements FrameListener {
     }
 
     public void removeNodeSelected(Node node) {
-        synchronized (this.nodes_selected) {
-            node.setSelected(false);
-            this.nodes_selected.remove(node);
-        }
+        System.out.println("In sync ! " + Thread.currentThread().getName());
+        node.setSelected(false);
+        System.out.println("Set selected ! " + Thread.currentThread().getName());
+        this.nodes_selected.remove(node);
+        System.out.println("Remove! " + Thread.currentThread().getName());
     }
 
     public void clearSelected() {
@@ -486,6 +488,7 @@ public abstract class Node implements FrameListener {
                 }
                 this.update(this);
             }
+            this.update(this);
         }
     }
 
@@ -496,19 +499,26 @@ public abstract class Node implements FrameListener {
     }
 
     public void elementBefore(Node node_caller) {
-        if (linear_component && this.nodes.contains(node_caller))
+        if (linear_component && this.nodes.contains(node_caller)) {
+            System.out.println("Element before !");
             if (this.nodes.indexOf(node_caller) > 0) {
+                System.out.println("Select : " + (this.nodes.indexOf(node_caller) - 1));
+                Thread.currentThread().setName("IMPORTANT !");
                 this.removeNodeSelected(node_caller);
+                System.out.println("After remove node select !");
                 this.addNodeSelected(this.nodes.get(this.nodes.indexOf(node_caller) - 1));
             }
+        }
     }
 
     public void elementAfter(Node node_caller) {
-        System.out.println("Called : " + this.getClass().getSimpleName());
-        if (linear_component && this.nodes.contains(node_caller))
+        if (linear_component && this.nodes.contains(node_caller)) {
+            System.out.println("Element after !");
             if (this.nodes.indexOf(node_caller) < this.nodes.size() - 1) {
+                System.out.println("Select : " + (this.nodes.indexOf(node_caller) + 1));
                 this.removeNodeSelected(node_caller);
                 this.addNodeSelected(this.nodes.get(this.nodes.indexOf(node_caller) + 1));
             }
+        }
     }
 }

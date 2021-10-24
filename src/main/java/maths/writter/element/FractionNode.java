@@ -103,6 +103,7 @@ public class FractionNode extends Node implements MultiComponent {
 
     public void selectDeno() {
         this.addNodeSelected(this.denominator);
+        this.denominator.addNodeSelected(this.denominator.nodes.get(0));
     }
 
     @Override

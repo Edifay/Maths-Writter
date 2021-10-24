@@ -73,6 +73,7 @@ public class NewNodeListener implements FrameListener {
             }
             this.manager.changeListener(this.manager.getContener());
         }
+        this.manager.changeListener(this.manager.getContener());
     }
 
     @Override

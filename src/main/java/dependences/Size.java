@@ -12,29 +12,28 @@ public class Size {
         this.width = x;
     }
 
-    public synchronized int getWidth() {
+    public int getWidth() {
         return this.width;
     }
 
-    public synchronized void setWidth(final int width) {
+    public void setWidth(final int width) {
         this.width = width;
     }
 
-    public synchronized int getHeight() {
+    public int getHeight() {
         return this.height;
     }
 
-    public synchronized void setHeight(final int height) {
+    public void setHeight(final int height) {
         this.height = height;
     }
 
-    public synchronized void setSize(final int width, final int height) {
     public void setSize(final int width, final int height) {
         this.width = width;
         this.height = height;
     }
 
-    public synchronized void setSize(Size location) {
+    public void setSize(Size location) {
         this.setSize(location.width, location.height);
     }
 

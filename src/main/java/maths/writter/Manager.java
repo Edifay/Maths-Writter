@@ -46,7 +46,7 @@ public class Manager {
 
     private static ExecutorService exe = Executors.newCachedThreadPool();
 
-    public synchronized static void startAway(Runnable runnable) {
+    public static void startAway(Runnable runnable) {
         exe.submit(runnable);
     }
 

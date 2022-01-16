@@ -39,7 +39,7 @@ public class NodeGraphics extends JPanel {
         this.contener.draw(g2d);
     }
 
-    public synchronized void setFrameListener(FrameListener frameListener) {
+    public void setFrameListener(FrameListener frameListener) {
         if (lastFrameListener != null) {
             this.removeMouseListener(this.lastFrameListener);
             this.removeKeyListener(this.lastFrameListener);

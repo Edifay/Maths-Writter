@@ -7,7 +7,7 @@ import maths.writter.element.special.MultiComponent;
 import java.awt.event.KeyEvent;
 
 public class MathsLine extends Node implements MultiComponent {
-
+    
     public MathsLine(Location location, Size size, Node parent) {
         this(location, size, parent, true);
     }
@@ -46,7 +46,7 @@ public class MathsLine extends Node implements MultiComponent {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_TAB && this.nodes_selected.size() != 0 && this.getLastMultiComponentSelected() == null) {
+        if (e.getKeyCode() == KeyEvent.VK_TAB && this.nodes_selected.size() != 0 /*&& this.getLastMultiComponentSelected() == null*/) {
             TextNode textNode = new TextNode(new Location(0, 0), new Size(0, 0), "", this);
             textNode.setMovable(false);
             this.insertNode(this.nodes.indexOf(this.nodes_selected.get(0)), textNode);

@@ -29,12 +29,12 @@ public class TextManager {
         return this.text.size();
     }
 
-    public synchronized void forEachLine(LineRunner lineRunner) {
+    public void forEachLine(LineRunner lineRunner) {
         for (int i = 0; i < this.text.size(); i++)
             lineRunner.run(this.text.get(i), i);
     }
 
-    public synchronized void forEachLineSelected(LineSelectedRunner lineSelectedRunner) {
+    public void forEachLineSelected(LineSelectedRunner lineSelectedRunner) {
 
         int min_y = Math.min(this.caret_location.getY(), this.selection_point.getY());
         int max_y = Math.max(this.caret_location.getY(), this.selection_point.getY());
@@ -67,11 +67,11 @@ public class TextManager {
         }
     }
 
-    public synchronized void onCaretLocation(CaretRunner runner) {
+    public void onCaretLocation(CaretRunner runner) {
         runner.run(this.caret_location.getX(), this.caret_location.getY(), this.text.get(this.caret_location.getY()));
     }
 
-    public synchronized void insertInLine(int line, int offset, String at_insert) {
+    public void insertInLine(int line, int offset, String at_insert) {
         String[] args = at_insert.split("\n");
         this.text.set(line, new StringBuilder(this.text.get(line)).insert(offset, args[0]).toString());
         for (int i = 1; i < args.length; i++)
@@ -84,31 +84,31 @@ public class TextManager {
         }
     }
 
-    public synchronized void insertLine(int offset, String line) {
+    public void insertLine(int offset, String line) {
         this.text.add(offset, line);
     }
 
-    public synchronized void insertLineAtCharacter(String at_insert) {
+    public void insertLineAtCharacter(String at_insert) {
         this.insertInLine(this.caret_location.getY(), this.caret_location.getX(), at_insert);
     }
 
-    public synchronized void deleteInLine(int line, int offset, int length) {
+    public void deleteInLine(int line, int offset, int length) {
         this.text.set(line, new StringBuilder(this.text.get(line)).delete(offset, offset + length).toString());
     }
 
-    public synchronized void deleteInLineWithOutReplace(int line, int offset, int length) {
+    public void deleteInLineWithOutReplace(int line, int offset, int length) {
         this.text.set(line, new StringBuilder(this.text.get(line)).delete(offset, offset + length).toString());
     }
 
-    public synchronized void deleteCharacterInLine(int line, int index) {
+    public void deleteCharacterInLine(int line, int index) {
         deleteInLine(line, index, 1);
     }
 
-    public synchronized void deleteCharacterAtCaret() {
+    public void deleteCharacterAtCaret() {
         deleteCharacterInLine(this.caret_location.getY(), this.caret_location.getX());
     }
 
-    public synchronized void deleteSelect() {
+    public void deleteSelect() {
         final int max_y = Math.max(this.caret_location.getY(), this.selection_point.getY());
         final int min_y = Math.min(this.caret_location.getY(), this.selection_point.getY());
 
@@ -129,23 +129,23 @@ public class TextManager {
         this.resetSelection();
     }
 
-    public synchronized void appendLine(String text) {
+    public void appendLine(String text) {
         this.text.add(text);
     }
 
-    public synchronized void setCaret_location(Location caret_location) {
+    public void setCaret_location(Location caret_location) {
         this.caret_location.setLocation(caret_location);
     }
 
-    public synchronized void setSelection_point(Location selection_point) {
+    public void setSelection_point(Location selection_point) {
         this.selection_point.setLocation(selection_point);
     }
 
-    public synchronized void resetSelection() {
+    public void resetSelection() {
         this.selection_point.setLocation(-1, -1);
     }
 
-    public synchronized String getString() {
+    public String getString() {
         StringBuilder atReturn = new StringBuilder();
         for (int i = 0; i < this.text.size(); i++)
             if (i != this.text.size() - 1)
@@ -163,7 +163,7 @@ public class TextManager {
         return this.selection_point.getX() == -1 && this.selection_point.getY() == -1;
     }
 
-    public synchronized String getLine(int index) {
+    public String getLine(int index) {
         return this.text.get(index);
     }
 
@@ -175,7 +175,7 @@ public class TextManager {
         return selection_point;
     }
 
-    public synchronized String getCaretLine() {
+    public String getCaretLine() {
         return this.text.get(this.caret_location.getY());
     }
 
@@ -183,19 +183,19 @@ public class TextManager {
         return this.caret_location.getY();
     }
 
-    public synchronized void defineSelectionPointToCaretLocation() {
+    public void defineSelectionPointToCaretLocation() {
         this.setSelection_point(this.caret_location);
     }
 
-    public synchronized void moveCaretLeft() {
+    public void moveCaretLeft() {
         this.caret_location.setX(this.caret_location.getX() - 1);
     }
 
-    public synchronized void moveCaretRight() {
+    public void moveCaretRight() {
         this.caret_location.setX(this.caret_location.getX() + 1);
     }
 
-    public synchronized String selectedToString() {
+    public String selectedToString() {
         StringBuilder atReturn = new StringBuilder("");
         this.forEachLineSelected((text1, line_number, line_number_selected, caret_x_min, caret_x_max, min_y, max_y) -> {
             atReturn.append(text1, caret_x_min, caret_x_max);
@@ -229,11 +229,11 @@ public class TextManager {
         return stringBuilder.toString();
     }
 
-    public synchronized void insertLineAtCaret(String text) {
+    public void insertLineAtCaret(String text) {
         this.insertLine(this.caret_location.getY() + 1, text);
     }
 
-    public synchronized void deleteLine(int line) {
+    public void deleteLine(int line) {
         this.text.remove(line);
     }
 

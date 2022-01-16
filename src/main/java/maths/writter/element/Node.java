@@ -54,51 +54,41 @@ public abstract class Node implements FrameListener {
     }
 
     public Location getLocation() {
-        synchronized (this.location) {
-            return this.location;
-        }
+        return this.location;
     }
 
     public Location setLocation(final Location location) {
-        synchronized (this.location) {
-            this.location.setLocation(location);
-            return this.location;
-        }
+        this.location.setLocation(location);
+        return this.location;
     }
 
     public Size getSize() {
-        synchronized (this.size) {
-            return this.size;
-        }
+        return this.size;
     }
 
     public Size setSize(final Size size) {
-        synchronized (this.size) {
-            if (size.getWidth() < 0) {
-                this.location.setX(this.location.getX() + size.getWidth());
-                this.size.setWidth(this.size.getWidth() - size.getWidth());
-            } else
-                this.size.setWidth(size.getWidth());
+        if (size.getWidth() < 0) {
+            this.location.setX(this.location.getX() + size.getWidth());
+            this.size.setWidth(this.size.getWidth() - size.getWidth());
+        } else
+            this.size.setWidth(size.getWidth());
 
-            if (size.getHeight() < 0) {
-                this.location.setY(this.location.getY() + size.getHeight());
-                this.size.setHeight(this.size.getHeight() - size.getHeight());
-            } else
-                this.size.setHeight(size.getHeight());
+        if (size.getHeight() < 0) {
+            this.location.setY(this.location.getY() + size.getHeight());
+            this.size.setHeight(this.size.getHeight() - size.getHeight());
+        } else
+            this.size.setHeight(size.getHeight());
 
-            this.resizeChild();
-            return this.size;
-        }
+        this.resizeChild();
+        return this.size;
     }
 
     public void draw(Graphics2D g) {
-        synchronized (this.size) {
-            for (Node node : this.nodes)
-                if (node.isHaveToBeDraw())
-                    node.draw((Graphics2D) g.create(node.location.getX(), node.location.getY(), node.size.getWidth(), node.size.getHeight()));
-            if (selected)
-                g.drawRect(0, 0, size.getWidth() - 1, size.getHeight() - 1);
-        }
+        for (Node node : this.nodes)
+            if (node.isHaveToBeDraw())
+                node.draw((Graphics2D) g.create(node.location.getX(), node.location.getY(), node.size.getWidth(), node.size.getHeight()));
+        if (selected)
+            g.drawRect(0, 0, size.getWidth() - 1, size.getHeight() - 1);
     }
 
     public void update(Node parent) {
@@ -154,27 +144,21 @@ public abstract class Node implements FrameListener {
     }
 
     public void addNode(Node node) {
-        synchronized (this.nodes) {
-            this.nodes.add(node);
-            this.update(this);
-            this.update(this);
-        }
+        this.nodes.add(node);
+        this.update(this);
+        this.update(this);
     }
 
     public void removeNode(Node node) {
-        synchronized (this.nodes) {
-            this.nodes.remove(node);
-            this.removeNodeSelected(node);
-            this.resizeChild();
-            this.update(this);
-        }
+        this.nodes.remove(node);
+        this.removeNodeSelected(node);
+        this.resizeChild();
+        this.update(this);
     }
 
     public void addNodeSelected(Node node) {
-        synchronized (this.nodes_selected) {
-            this.nodes_selected.add(node);
-            node.setSelected(true);
-        }
+        this.nodes_selected.add(node);
+        node.setSelected(true);
     }
 
     public void removeNodeSelected(Node node) {
@@ -186,17 +170,13 @@ public abstract class Node implements FrameListener {
     }
 
     public void clearSelected() {
-        synchronized (this.nodes_selected) {
-            for (Node node : this.nodes_selected)
-                node.setSelected(false);
-            this.nodes_selected.clear();
-        }
+        for (Node node : this.nodes_selected)
+            node.setSelected(false);
+        this.nodes_selected.clear();
     }
 
     public boolean isChildNodeSelected(Node node) {
-        synchronized (this.nodes_selected) {
-            return this.nodes_selected.contains(node);
-        }
+        return this.nodes_selected.contains(node);
     }
 
     public boolean isHaveToBeDraw() {
@@ -479,23 +459,18 @@ public abstract class Node implements FrameListener {
     }
 
     public void replace(Node at_remove, Node at_add) {
-        synchronized (this.nodes) {
-            if (this.nodes.contains(at_remove)) {
-                this.nodes.set(this.nodes.indexOf(at_remove), at_add);
-                if (this.nodes_selected.contains(at_remove)) {
-                    this.removeNodeSelected(at_remove);
-                    this.addNodeSelected(at_add);
-                }
-                this.update(this);
+        if (this.nodes.contains(at_remove)) {
+            this.nodes.set(this.nodes.indexOf(at_remove), at_add);
+            if (this.nodes_selected.contains(at_remove)) {
+                this.removeNodeSelected(at_remove);
+                this.addNodeSelected(at_add);
             }
             this.update(this);
         }
     }
 
     public void insertNode(int index, Node node) {
-        synchronized (this.nodes) {
-            this.nodes.add(index + 1, node);
-        }
+        this.nodes.add(index + 1, node);
     }
 
     public void elementBefore(Node node_caller) {

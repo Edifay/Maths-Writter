@@ -28,11 +28,9 @@ public class NewNodeListener implements FrameListener {
 
     @Override
     public void dispose() {
-        synchronized (key) {
-            if (actual != null)
-                this.manager.getContener().removeNode(actual);
-            this.manager.setCursor(Cursor.getDefaultCursor());
-        }
+        if (actual != null)
+            this.manager.getContener().removeNode(actual);
+        this.manager.setCursor(Cursor.getDefaultCursor());
     }
 
     @Override
@@ -54,24 +52,19 @@ public class NewNodeListener implements FrameListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        synchronized (key) {
-            default_location = new Location(e.getX(), e.getY());
-            actual = new MathsLineText(default_location.clone(), new Size(100, 100), this.manager.getContener());
-            this.manager.getContener().addNode(actual);
-            this.manager.getContener().addNodeSelected(actual);
-        }
+        default_location = new Location(e.getX(), e.getY());
+        actual = new MathsLineText(default_location.clone(), new Size(100, 100), this.manager.getContener());
+        this.manager.getContener().addNode(actual);
+        this.manager.getContener().addNodeSelected(actual);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        synchronized (key) {
-            if (actual != null) {
-                RectangleArea rectangleArea = getWidth(new Location(e.getX(), e.getY()));
-                actual.setLocation(rectangleArea.getLocation());
-                actual.setSize(rectangleArea.getSize());
-                actual = null;
-            }
-            this.manager.changeListener(this.manager.getContener());
+        if (actual != null) {
+            RectangleArea rectangleArea = getWidth(new Location(e.getX(), e.getY()));
+            actual.setLocation(rectangleArea.getLocation());
+            actual.setSize(rectangleArea.getSize());
+            actual = null;
         }
         this.manager.changeListener(this.manager.getContener());
     }
@@ -93,12 +86,10 @@ public class NewNodeListener implements FrameListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        synchronized (key) {
-            if (actual != null) {
-                RectangleArea rectangleArea = getWidth(new Location(e.getX(), e.getY()));
-                actual.setLocation(rectangleArea.getLocation());
-                actual.setSize(rectangleArea.getSize());
-            }
+        if (actual != null) {
+            RectangleArea rectangleArea = getWidth(new Location(e.getX(), e.getY()));
+            actual.setLocation(rectangleArea.getLocation());
+            actual.setSize(rectangleArea.getSize());
         }
     }
 

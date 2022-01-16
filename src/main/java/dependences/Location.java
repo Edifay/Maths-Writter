@@ -13,28 +13,28 @@ public class Location {
     }
 
 
-    public synchronized int getX() {
+    public int getX() {
         return this.x;
     }
 
-    public synchronized void setX(final int x) {
+    public void setX(final int x) {
         this.x = x;
     }
 
-    public synchronized int getY() {
+    public int getY() {
         return this.y;
     }
 
-    public synchronized void setY(final int y) {
+    public void setY(final int y) {
         this.y = y;
     }
 
-    public synchronized void setLocation(final int x, final int y) {
+    public void setLocation(final int x, final int y) {
         this.x = x;
         this.y = y;
     }
 
-    public synchronized void setLocation(Location location) {
+    public void setLocation(Location location) {
         this.setLocation(location.x, location.y);
     }
 

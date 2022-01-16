@@ -5,7 +5,7 @@ Son but est de pouvoir écrire facilement des formules mathématiques et avec qu
 
 A terme le but est de pouvoir écrire plus facilement des maths et pouvoir sauvegarder en un fichier ouvrable par Word.
 
-#Fonctionnement
+# Fonctionnement
 
 Il y a une sorte de recréation du système graphique, c'est à dire que j'ai recréé la Node graphique, qui est hérité par plusieurs sous classes.
 Mais aussi le système de texte est refait entièrement pour pouvoir gérer complètement les zones de textes, le curseurs, selection de textes, lignes... tout est refait à la main.

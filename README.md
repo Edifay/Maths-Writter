@@ -7,7 +7,7 @@ A terme le but est de pouvoir écrire plus facilement des maths et pouvoir sauve
 
 # Fonctionnement
 
-(Aucune externe n'a été utilisé dans cette application)
+(Aucune lib externe n'a été utilisé dans cette application)
 
 Il y a une sorte de recréation du système graphique, c'est à dire que j'ai recréé la Node graphique, qui est hérité par plusieurs sous classes.
 
